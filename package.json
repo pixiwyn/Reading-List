@@ -24,6 +24,7 @@
         "vue-template-compiler": "^2.6.11"
     },
     "dependencies": {
-        "@websanova/vue-auth": "^2.21.15-beta"
+        "@websanova/vue-auth": "^2.21.15-beta",
+        "vue-truncate-filter": "^1.1.7"
     }
 }

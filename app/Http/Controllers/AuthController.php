@@ -90,11 +90,12 @@ class AuthController extends Controller
     /**
      * Refresh a token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function refresh()
     {
-        return $this->respondWithToken($this->guard()->refresh());
+        $token = (Auth::guard()->refresh());
+        return response(['status' => 'success'])->header('Authorization', $token);
     }
 
     /**

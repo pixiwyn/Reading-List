@@ -12,7 +12,7 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" class="form-control" v-model="password" required>
             </div>
-            <button type="submit" class="btn btn-default">Sign in</button>
+            <button type="submit" class="btn btn-primary">Sign in</button>
         </form>
     </div>
 </template>
@@ -37,16 +37,16 @@
                     params: {
                         email: app.email,
                         password: app.password
-                    }, 
+                    },
                     success: function () {},
                     error: function (resp) {
                         alert(resp.response.data.msg)
                     },
                     rememberMe: true,
-                    redirect: '/dashboard',
+                    redirect: '/list',
                     fetchUser: true,
-                });             
+                });
             },
         }
-    }   
+    }
 </script>

@@ -20,11 +20,12 @@ Route::group(['prefix' => 'auth'], function () {
     Route::group(['middleware' => ['auth:api']], function () {
         Route::get('user', 'AuthController@user');
         Route::post('logout', 'AuthController@logout');
-        Route::post('refresh', 'AuthController@refresh');
+        Route::get('refresh', 'AuthController@refresh');
     });
 });
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::apiResource('books', 'BookController');
-    Route::get('books/search', 'BookController@search');
 });
+
+Route::get('list', 'ListController@index');

@@ -7,31 +7,61 @@ use App\Helpers\GoogleBooks;
 use App\Book;
 use Illuminate\Support\Facades\Auth;
 
-
 class BookController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @var GoogleBooks
      */
-    public function index()
-    {
-        $books = Book::where('user_id', Auth::user()->id)->get();
-        return response()->json([
-            'books' => $books
+    private $googleBooks;
+
+    /**
+     * @var int limit
+     */
+    private $limit = 25;
+
+    public function __construct() {
+        $this->googleBooks = new GoogleBooks([
+            'key' => 'AIzaSyDqVSJGBNJz-9-r2vjWzvqF14_bxKe2l_U',
+            'maxResults' => $this->limit,
         ]);
     }
 
-    public function search(Request $request) {
-        $googleBooks = new GoogleBooks([
-            'key' => 'AIzaSyDqVSJGBNJz-9-r2vjWzvqF14_bxKe2l_U',
-            'maxResults' => 25,
-        ]);
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
         $q = $request->query('q');
-        $results = $$googleBooks->raw('volumes', ['q' => $q, 'orderBy' => 'relevance', 'printType' => 'books']);
-        return response()->json($results);
+        $results = $this->googleBooks->raw('volumes', ['q' => $q, 'orderBy' => 'relevance', 'printType' => 'books']);
+
+        $numOfPages = ceil($results['totalItems'] / $this->limit);
+        $currentPage = !empty($request->query('pages')) ? $request->query('pages') : 1;
+
+       $list = array_map([$this, "formatGoogleResult"], $results['items']);
+
+        return response([
+            'status' => 'success',
+            'numOfPages' => $numOfPages,
+            'currentPage' => $currentPage,
+            'results' => $list
+        ]);
+    }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    private function formatGoogleResult($result) {
+        return [
+            'google_id' => $result['id'],
+            'id' => $result['id'],
+            'title' => $result['volumeInfo']['title'],
+            'authors' => isset($result['volumeInfo']['authors']) ? $result['volumeInfo']['authors'] : [],
+            'description' => isset($result['volumeInfo']['description']) ? $result['volumeInfo']['description'] : '',
+            'cover_img_url' => isset($result['volumeInfo']['imageLinks']['smallThumbnail']) ? $result['volumeInfo']['imageLinks']['smallThumbnail'] : '#'
+        ];
     }
 
     /**
@@ -59,9 +89,26 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $bookType = !empty($request->query('bookType')) ? $request->query('bookType') : 'list';
 
+        if($bookType === 'list') {
+            $book = Book::where([
+                'id' => $id,
+                'user_id' => Auth::user()->id
+            ])->first();
+        } else {
+            $result = $this->googleBooks->raw("volumes/$id");
+            $book = $this->formatGoogleResult($result);
+            //$book = $result;
+        }
+
+
+        return response([
+            'status' => 'success',
+            'details' => $book
+        ]);
     }
 
     /**
@@ -86,7 +133,7 @@ class BookController extends Controller
     {
         $deleted = Book::where([
             'id' => $id,
-            'user_id' => $this->user_id
+            'user_id' => Auth::user()->id
         ])->delete();
 
         return response()->json(['deletedIds' => $deleted]);
