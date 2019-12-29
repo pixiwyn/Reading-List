@@ -15,7 +15,7 @@ Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 Vue.use(VueTruncate);
 
-axios.defaults.baseURL = 'http://localhost:8000/api';
+axios.defaults.baseURL = '/api';
 
 const router = new VueRouter({
     mode: 'history',
