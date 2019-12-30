@@ -79,7 +79,7 @@ class BookController extends Controller
     public function store(Request $request)
     {
         $gBook = $this->googleBooks->raw("volumes/" . $request->google_id);
-        $book = $this->googleBooks->formatGoogleResult($gBook);
+        $book = $this->googleBooks->formatGoogleResult($gBook, false);
         $book['short_description'] = strip_tags($request->description);
         $book['user_id'] = Auth::user()->id;
         $book['order'] = 0;

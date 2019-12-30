@@ -94,12 +94,12 @@ class GoogleBooks {
 
     /**
      * @param $result
+     * @param bool $id
      * @return array
      */
-    public static function formatGoogleResult($result) {
-        return [
+    public static function formatGoogleResult($result, $id = true) {
+        $data = [
             'google_id' => $result['id'],
-            'id' => $result['id'],
             'title' => $result['volumeInfo']['title'],
             'authors' => isset($result['volumeInfo']['authors']) ? implode(', ', $result['volumeInfo']['authors']) : '',
             'description' => isset($result['volumeInfo']['description']) ? $result['volumeInfo']['description'] : '',
@@ -109,5 +109,11 @@ class GoogleBooks {
             'buy_link' => isset($result['saleInfo']['buyLink']) ? $result['saleInfo']['buyLink'] : '',
             'ratings_count' => isset($result['volumeInfo']['ratingsCount']) ? $result['volumeInfo']['ratingsCount'] : 0
         ];
+
+        if($id) {
+            $data['id'] = $result['id'];
+        }
+
+        return $data;
     }
 }
