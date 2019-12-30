@@ -24,7 +24,7 @@ class CreateBooksTable extends Migration
             $table->string('published_date');
             $table->string('buy_link');
             $table->double('average_rating');
-            $table->integer('ratings_count'),
+            $table->integer('ratings_count');
             $table->text('cover_img_url');
             $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users');
