@@ -14,6 +14,7 @@ import Details from "./views/Details";
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 Vue.use(VueTruncate);
+Vue.use(require('vue-moment'));
 
 axios.defaults.baseURL = '/api';
 

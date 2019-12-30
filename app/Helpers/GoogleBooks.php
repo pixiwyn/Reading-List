@@ -44,9 +44,7 @@ class GoogleBooks {
 
         $this->key = isset($options['key']) ? $options['key'] : null;
         $this->country = isset($options['country']) ? $options['country'] : null;
-
         $this->batchSize = isset($options['batchSize']) ? $options['batchSize'] : 25;
-
         $this->maxResults = isset($options['maxResults']) ? $options['maxResults'] : null;
     }
 
@@ -92,5 +90,23 @@ class GoogleBooks {
         }
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    public static function formatGoogleResult($result) {
+        return [
+            'google_id' => $result['id'],
+            'id' => $result['id'],
+            'title' => $result['volumeInfo']['title'],
+            'authors' => isset($result['volumeInfo']['authors']) ? implode(', ', $result['volumeInfo']['authors']) : '',
+            'description' => isset($result['volumeInfo']['description']) ? $result['volumeInfo']['description'] : '',
+            'cover_img_url' => isset($result['volumeInfo']['imageLinks']['smallThumbnail']) ? $result['volumeInfo']['imageLinks']['smallThumbnail'] : '#',
+            'average_rating' => isset($result['volumeInfo']['averageRating']) ? $result['volumeInfo']['averageRating'] : 0,
+            'published_date' => isset($result['volumeInfo']['publishedDate']) ? $result['volumeInfo']['publishedDate'] : '',
+            'buy_link' => isset($result['saleInfo']['buyLink']) ? $result['saleInfo']['buyLink'] : ''
+        ];
     }
 }

@@ -12,7 +12,17 @@ class Book extends Model
      * @var array
      */
     protected $fillable = [
-        'google_id', 'title', 'description', 'cover_img_url', 'user_id'
+        'google_id',
+        'title',
+        'order',
+        'description',
+        'short_description',
+        'authors',
+        'published_date',
+        'buy_link',
+        'average_rating',
+        'cover_img_url',
+        'user_id'
     ];
 
     /**

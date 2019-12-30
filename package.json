@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "@websanova/vue-auth": "^2.21.15-beta",
+        "vue-moment": "^4.1.0",
         "vue-truncate-filter": "^1.1.7"
     }
 }

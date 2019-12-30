@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\GoogleBooks;
 use App\Book;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
-
     /**
      * @var GoogleBooks
      */
@@ -18,8 +18,13 @@ class BookController extends Controller
     /**
      * @var int limit
      */
-    private $limit = 25;
+    private $limit = 15;
 
+    private $pageLimit = 10;
+
+    /**
+     * BookController constructor
+     */
     public function __construct() {
         $this->googleBooks = new GoogleBooks([
             'key' => 'AIzaSyDqVSJGBNJz-9-r2vjWzvqF14_bxKe2l_U',
@@ -29,65 +34,64 @@ class BookController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
+        return $this->search($request);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function search(Request $request)
+    {
         $q = $request->query('q');
-        $results = $this->googleBooks->raw('volumes', ['q' => $q, 'orderBy' => 'relevance', 'printType' => 'books']);
+        $startIndex = !empty($request->query('page')) ? $request->query('page') * $this->limit : 0;
+
+        $results = $this->googleBooks->raw('volumes', [
+            'q' => $q,
+            'startIndex' => $startIndex,
+            'langRestrict' => 'en',
+            'orderBy' => 'relevance',
+            'printType' => 'books'
+        ]);
 
         $numOfPages = ceil($results['totalItems'] / $this->limit);
-        $currentPage = !empty($request->query('pages')) ? $request->query('pages') : 1;
+        $currentPage = !empty($request->query('page')) ? (int)$request->query('page') : 1;
 
-       $list = array_map([$this, "formatGoogleResult"], $results['items']);
+        $list = array_map([$this->googleBooks, "formatGoogleResult"], $results['items']);
 
         return response([
             'status' => 'success',
-            'numOfPages' => $numOfPages,
+            'numOfPages' => ($this->pageLimit < $numOfPages) ? $this->pageLimit : $numOfPages,
             'currentPage' => $currentPage,
             'results' => $list
         ]);
     }
 
     /**
-     * @param $result
-     * @return array
-     */
-    private function formatGoogleResult($result) {
-        return [
-            'google_id' => $result['id'],
-            'id' => $result['id'],
-            'title' => $result['volumeInfo']['title'],
-            'authors' => isset($result['volumeInfo']['authors']) ? $result['volumeInfo']['authors'] : [],
-            'description' => isset($result['volumeInfo']['description']) ? $result['volumeInfo']['description'] : '',
-            'cover_img_url' => isset($result['volumeInfo']['imageLinks']['smallThumbnail']) ? $result['volumeInfo']['imageLinks']['smallThumbnail'] : '#'
-        ];
-    }
-
-    /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
-        $book = Book::create([
-            'google_id' => $request->google_id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'cover_img_url' => $request->cover_img_url,
-            'user_id' => Auth::user()->id,
-        ]);
-
-        return response()->json($book);
+        $gBook = $this->googleBooks->raw("volumes/" . $request->google_id);
+        $book = $this->googleBooks->formatGoogleResult($gBook);
+        $book['short_description'] = strip_tags($request->description);
+        $book['user_id'] = Auth::user()->id;
+        $book['order'] = 0;
+        Book::create($book);
+        return response([$book], 201);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int $id
+     * @return Response
      */
     public function show(Request $request, $id)
     {
@@ -100,10 +104,8 @@ class BookController extends Controller
             ])->first();
         } else {
             $result = $this->googleBooks->raw("volumes/$id");
-            $book = $this->formatGoogleResult($result);
-            //$book = $result;
+            $book = $this->googleBooks->formatGoogleResult($result);
         }
-
 
         return response([
             'status' => 'success',
@@ -112,22 +114,9 @@ class BookController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //Not implemented
-    }
-
-    /**
      * Remove the specified resource from storage.
-     *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
@@ -136,6 +125,6 @@ class BookController extends Controller
             'user_id' => Auth::user()->id
         ])->delete();
 
-        return response()->json(['deletedIds' => $deleted]);
+        return response(['deletedIds' => $deleted]);
     }
 }

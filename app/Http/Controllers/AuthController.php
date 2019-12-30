@@ -4,45 +4,33 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //$this->middleware('auth:api', ['except' => ['login']]);
-    }
-
-    public function test(){
-        return response([
-           'status' => 'success'
-        ]);
-    }
-
-    /**
      * Get a JWT token via given credentials.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return Response
      */
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if ($token = $this->guard()->attempt($credentials)) {
-            return response(['status' => 'success'])->header('Authorization', $token);
+        if ($token = Auth::guard()->attempt($credentials)) {
+            return response(['status' => 'success'])
+                ->header('Authorization', $token);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response(['error' => 'Unauthorized'], 401);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function register(Request $request)
     {
         $user = User::create([
@@ -62,13 +50,11 @@ class AuthController extends Controller
 
     /**
      * Get the authenticated User
-     *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return Response
      */
     public function user()
     {
         $user = User::find(Auth::user()->id);
-
         return response([
             'status' => 'success',
             'data' => $user
@@ -77,50 +63,21 @@ class AuthController extends Controller
 
     /**
      * Log the user out (Invalidate the token)
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
     public function logout()
     {
-        $this->guard()->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
+        Auth::guard()->logout();
+        return response(['message' => 'Successfully logged out']);
     }
 
     /**
      * Refresh a token.
-     *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return Response
      */
     public function refresh()
     {
         $token = (Auth::guard()->refresh());
         return response(['status' => 'success'])->header('Authorization', $token);
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => $this->guard()->factory()->getTTL() * 60
-        ]);
-    }
-
-    /**
-     * Get the guard to be used during authentication.
-     *
-     * @return \Illuminate\Contracts\Auth\Guard
-     */
-    public function guard()
-    {
-        return Auth::guard();
     }
 }

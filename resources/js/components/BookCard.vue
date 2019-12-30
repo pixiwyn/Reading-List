@@ -7,8 +7,9 @@
             <div class="col-md-10">
                 <div class="card-body">
                     <h5 class="card-title">{{ book.title }}</h5>
-                    <p class="card-text">{{ book.description | truncate(250) }}</p>
-                    <p class="card-text"><small class="text-muted"><span v-for="author in book.authors">{{ author }} </span></small></p>
+                    <p class="card-text" v-if="!book.short_description">{{ book.description | truncate(300) }}</p>
+                    <p class="card-text" v-if="book.short_description">{{ book.short_description | truncate(300) }}</p>
+                    <p class="card-text"><small class="text-muted"><span>{{ book.authors }} </span></small></p>
                     <a :href="`/details/${book.id}/${bookType}`" class="btn btn-primary"><i class="fas fa-external-link-alt"></i></a>
                     <button @click="add(i)" class="btn btn-success" v-show="bookType === 'search'"><i class="far fa-bookmark"></i></button>
                     <button @click="remove(i)" class="btn btn-danger" v-show="bookType === 'list'"><i class="far fa-trash-alt"></i></button>
@@ -43,5 +44,8 @@
 </script>
 
 <style scoped>
-
+    img {
+        margin-top: 15px;
+        margin-left: 15px;
+    }
 </style>
