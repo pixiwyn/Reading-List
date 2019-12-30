@@ -21,6 +21,7 @@ class Book extends Model
         'published_date',
         'buy_link',
         'average_rating',
+        'ratings_count',
         'cover_img_url',
         'user_id'
     ];

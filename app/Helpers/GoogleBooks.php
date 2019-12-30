@@ -106,7 +106,8 @@ class GoogleBooks {
             'cover_img_url' => isset($result['volumeInfo']['imageLinks']['smallThumbnail']) ? $result['volumeInfo']['imageLinks']['smallThumbnail'] : '#',
             'average_rating' => isset($result['volumeInfo']['averageRating']) ? $result['volumeInfo']['averageRating'] : 0,
             'published_date' => isset($result['volumeInfo']['publishedDate']) ? $result['volumeInfo']['publishedDate'] : '',
-            'buy_link' => isset($result['saleInfo']['buyLink']) ? $result['saleInfo']['buyLink'] : ''
+            'buy_link' => isset($result['saleInfo']['buyLink']) ? $result['saleInfo']['buyLink'] : '',
+            'ratings_count' => isset($result['volumeInfo']['ratingsCount']) ? $result['volumeInfo']['ratingsCount'] : 0
         ];
     }
 }
