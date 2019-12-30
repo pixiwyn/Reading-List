@@ -36,7 +36,7 @@
             this.results = books;
             this.q = localStorage.getItem('q');
             this.last_page = parseInt(localStorage.getItem('last_page'));
-            this.current_page = parseInt(localStorage.getItem('current_page'));
+            this.current_page = localStorage.getItem('current_page') ? parseInt(localStorage.getItem('current_page')) : 1;
         },
         methods: {
             search() {
