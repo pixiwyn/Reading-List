@@ -6,7 +6,7 @@
         <div class="alert alert-success" v-if="success">
             <p>Registration completed. You can now <router-link :to="{name:'login'}">sign in.</router-link></p>
         </div>
-        <form autocomplete="off" v-on:submit="register" v-if="!success">
+        <form autocomplete="off" v-on:submit.prevent="register" v-if="!success">
             <div class="form-group" v-bind:class="{ 'has-error': error && errors.username }">
                 <label for="name">Name</label>
                 <input type="text" id="name" class="form-control" v-model="name" required>
@@ -27,7 +27,7 @@
     </div>
 </template>
 
-<script> 
+<script>
     export default {
         data(){
             return {
@@ -42,13 +42,13 @@
 
         methods: {
             register(){
-                var app = this
+                var app = this;
                 this.$auth.register({
                     params: {
                         name: app.name,
                         email: app.email,
                         password: app.password
-                    }, 
+                    },
                     success: function () {
                         app.success = true
                     },
@@ -57,7 +57,7 @@
                         app.errors = resp.response.data.errors;
                     },
                     redirect: null
-                });                
+                });
             }
         }
     }

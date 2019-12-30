@@ -39,7 +39,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        if(isset($user)) return response($user, 201);
+        if(isset($user)) return response(['status' => 'success', 'user' => $user], 201);
 
         return response([
             'status' => 'error',

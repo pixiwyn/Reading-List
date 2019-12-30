@@ -5479,7 +5479,15 @@ var render = function() {
     !_vm.success
       ? _c(
           "form",
-          { attrs: { autocomplete: "off" }, on: { submit: _vm.register } },
+          {
+            attrs: { autocomplete: "off" },
+            on: {
+              submit: function($event) {
+                $event.preventDefault()
+                return _vm.register($event)
+              }
+            }
+          },
           [
             _c(
               "div",
