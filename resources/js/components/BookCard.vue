@@ -46,6 +46,7 @@
 <style scoped>
     img {
         margin-top: 15px;
+        margin-bottom: 15px;
         margin-left: 15px;
     }
 </style>

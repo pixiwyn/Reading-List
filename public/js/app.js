@@ -3500,7 +3500,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\nimg[data-v-f9ada2f8] {\n    margin-top: 15px;\n    margin-left: 15px;\n}\n", ""]);
+exports.push([module.i, "\nimg[data-v-f9ada2f8] {\n    margin-top: 15px;\n    margin-bottom: 15px;\n    margin-left: 15px;\n}\n", ""]);
 
 // exports
 
