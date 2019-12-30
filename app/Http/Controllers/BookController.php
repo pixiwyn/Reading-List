@@ -83,8 +83,8 @@ class BookController extends Controller
         $book['short_description'] = strip_tags($request->description);
         $book['user_id'] = Auth::user()->id;
         $book['order'] = 0;
-        Book::create($book);
-        return response([$book], 201);
+        $result = Book::create($book);
+        return response([$result], 201);
     }
 
     /**
