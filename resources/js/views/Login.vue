@@ -40,7 +40,7 @@
                     },
                     success: function () {},
                     error: function (resp) {
-                        alert(resp.response.data.msg)
+                        alert('incorrect creds')
                     },
                     rememberMe: true,
                     redirect: '/list',
