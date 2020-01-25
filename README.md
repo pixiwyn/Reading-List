@@ -1,7 +1,7 @@
 # Reading List
 
 ## Demo
-https://pixiwyn-reading-list.herokuapp.com/
+n/a
 
 ## Docs
 https://documenter.getpostman.com/view/152083/SWLb8UxP?version=latest
